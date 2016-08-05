@@ -1,0 +1,40 @@
+doctype html
+html
+    head
+        title Realtime Chat using Node.js and Socket.IO
+        meta(name='viewport', content="initial-scale=1")
+        link(rel='stylesheet', href='css/main.css')
+    body
+        script(src="https://code.jquery.com/jquery-2.1.3.min.js")
+        script(src="https://cdn.socket.io/socket.io-1.3.3.js")
+        script.
+          var socket = io();
+          var username = ((Math.random() * 10000.0) + 1).toFixed();
+          socket.emit('chat', {
+            username: username,
+            message: 'connected'
+          });
+          socket.on('chat', function(tran) {
+            var className = tran.username === username ? 'message message--me' : 'message';
+            var message = tran.username === username ? tran.message : tran.username + ":" + tran.message;
+            $('#chat-history').append($('<li class="'+ className +'">')
+              .text(message))
+              .scrollTop($('#chat-history')[0].scrollHeight);
+          });
+          $( document ).ready(function() {
+            console.log( "ready!" );
+            $('#chat-form').submit(function(e) {
+              e.preventDefault();
+              //console.log('submitted');
+              socket.emit('chat', {username: username, message: $('#chat-message').val()});
+              $(this)[0].reset();
+              return false;
+            });
+
+          });
+
+        div.box.box--container
+            div.box.box--chat
+                ul#chat-history
+                form#chat-form(action="")
+                    input.box(type="text", id="chat-message", autocomplete="off", placeholder="Enter message here...")
